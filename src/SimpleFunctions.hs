@@ -20,3 +20,9 @@ module Chapter2 where
     fibonacci 0 = 0
     fibonacci 1 = 1
     fibonacci n = fibonacci (n-1) + fibonacci (n-2)
+
+    qsort :: (Ord a) => [a] -> [a]
+    qsort []     = []
+    qsort (x:xs) =  qsort lesser ++ [x] ++ qsort greater
+                       where   lesser = [a | a <- xs, a <= x]
+                               greater = [a | a <- xs, a > x]
