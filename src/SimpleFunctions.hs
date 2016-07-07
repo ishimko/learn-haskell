@@ -27,6 +27,13 @@ module Chapter2 where
                        where   lesser = [a | a <- xs, a <= x]
                                greater = [a | a <- xs, a > x]
 
+    selectionSort :: (Ord a) => [a] -> [a]
+    selectionSort [] = []
+    selectionSort list = current ++ greater
+                            where   current = [x | x <- list, x == first]
+                                    greater = selectionSort [x | x <- list, x > first]
+                                    first = minimum list
+
     unzip' :: [(a, b)] -> ([a], [b])
     unzip' [] = ([], [])
     unzip' (x:xs) = ( fst x : fst unzipped
