@@ -26,3 +26,10 @@ module Chapter2 where
     qsort (x:xs) =  qsort lesser ++ [x] ++ qsort greater
                        where   lesser = [a | a <- xs, a <= x]
                                greater = [a | a <- xs, a > x]
+
+    unzip' :: [(a, b)] -> ([a], [b])
+    unzip' [] = ([], [])
+    unzip' (x:xs) = ( fst x : fst unzipped
+                    , snd x : snd unzipped
+                    ) where unzipped = unzip' xs
+
