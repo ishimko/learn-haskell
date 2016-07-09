@@ -1,4 +1,4 @@
-module Chapter2 where
+module SimpleFunctions where
     firstOrEmpty :: [[Char]] -> [Char]
     firstOrEmpty lst = if not (null lst) then head lst else "empty"
 
@@ -63,5 +63,5 @@ module Chapter2 where
     all'' [] = True
     all'' (x:xs) = x && all'' xs
 
-    minimumBy :: (Ord a, Foldable b) => (a -> a) -> b a -> a
+    minimumBy :: (Ord a, Foldable b) => (c -> a) -> b c -> c
     minimumBy f = foldr1 (\x y -> if f x < f y then x else y)
