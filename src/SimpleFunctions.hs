@@ -48,3 +48,17 @@ module Chapter2 where
 
     filterNot :: (a -> Bool) -> [a] -> [a]
     filterNot f = filter (not . f)
+
+    product' :: (Num a, Foldable b) => b a -> a
+    product' = foldr (*) 1
+
+    product'' :: (Num a) => [a] -> a
+    product'' [] = 1
+    product'' (x:xs) = x * product'' xs
+
+    all' :: Foldable a => a Bool -> Bool
+    all' = foldr (&&) True
+
+    all'' :: [Bool] -> Bool
+    all'' [] = True
+    all'' (x:xs) = x && all'' xs
