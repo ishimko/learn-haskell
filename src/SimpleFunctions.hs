@@ -40,3 +40,11 @@ module Chapter2 where
                     , snd x : snd unzipped
                     ) where unzipped = unzip' xs
 
+    filterOnes :: [Integer] -> [Integer]
+    filterOnes = filter (== 1)
+
+    filterAtElement :: (Eq a) => a -> [a] -> [a]
+    filterAtElement element = filter (== element)
+
+    filterNot :: (a -> Bool) -> [a] -> [a]
+    filterNot f = filter (not . f)
