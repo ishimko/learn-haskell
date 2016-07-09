@@ -71,3 +71,10 @@ module DataTypes where
     filterGovOrgs' = filter (\case  GovOrg _ -> True
                                     _ -> False
                             )
+
+    minimumClientConst :: Client
+    minimumClientConst = GovOrg ""
+
+    minimumClient :: [Client] -> Client
+    minimumClient = foldr1 (\c1 c2 -> if nameLength c1 < nameLength c2 then c1 else c2)
+                        where nameLength = length . clientName
