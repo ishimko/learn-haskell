@@ -62,3 +62,6 @@ module Chapter2 where
     all'' :: [Bool] -> Bool
     all'' [] = True
     all'' (x:xs) = x && all'' xs
+
+    minimumBy :: (Ord a, Foldable b) => (a -> a) -> b a -> a
+    minimumBy f = foldr1 (\x y -> if f x < f y then x else y)
