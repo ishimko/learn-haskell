@@ -1,3 +1,4 @@
+{-# LANGUAGE NamedFieldPuns #-}
 module DataTypes where
     data Client = GovOrg     String
                 | Company    String Integer Person String
@@ -10,7 +11,9 @@ module DataTypes where
     data Gender = Male | Female | Unknown
                 deriving Show
 
-    data TimeMachine = TimeMachine Model TravelType Double
+    data TimeMachine = TimeMachine { model :: Model
+                                   , travelType :: TravelType
+                                   , cost :: Double }
                      deriving Show
 
     data Model = Model String Integer String
@@ -43,4 +46,5 @@ module DataTypes where
 
     makeDiscount :: [TimeMachine] -> Double -> [TimeMachine]
     makeDiscount [] _ = []
-    makeDiscount (TimeMachine model travelType cost:xs) percent = TimeMachine model travelType (cost*(1 - percent)) : makeDiscount xs percent
+    makeDiscount (t@(TimeMachine { cost }):xs) percent =  let newCost = cost*(1 - percent)
+                                                          in t{cost = newCost}:makeDiscount xs percent
