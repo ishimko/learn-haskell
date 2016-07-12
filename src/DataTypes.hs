@@ -2,6 +2,8 @@
 module DataTypes where
 
 import SimpleFunctions
+import Data.List (groupBy, sortBy)
+import Data.Function (on)
 
 --data Client = GovOrg     String
 --            | Company    String Integer Person String
@@ -92,4 +94,12 @@ compareClient (Individual{person = p1}) (Individual{person = p2})
 compareClient (Individual {}) _ = GT
 compareClient _ (Individual {}) = LT
 compareClient c1 c2             = compare (clientName c1) (clientName c2)
+
+companyDutiesAnalytics :: [Client a] -> [String]
+companyDutiesAnalytics =  map (duty . head) .
+                            sortBy (flip (compare `on` length)) .
+                            groupsBy (compare `on` duty) .
+                            filter isCompany
+                          where isCompany (Company {}) = True
+                                isCompany _            = False
 

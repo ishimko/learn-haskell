@@ -1,5 +1,8 @@
 module SimpleFunctions where
 
+import Data.List (sort, group, sortBy, groupBy)
+import Data.Function (on)
+
 firstOrEmpty :: [[Char]] -> [Char]
 firstOrEmpty lst = if not (null lst) then head lst else "empty"
 
@@ -66,3 +69,9 @@ all'' (x:xs) = x && all'' xs
 
 minimumBy :: (Ord a, Foldable b) => (c -> a) -> b c -> c
 minimumBy f = foldr1 (\x y -> if f x < f y then x else y)
+
+groups :: (Ord t) => [t] -> [[t]]
+groups = groupsBy compare
+
+groupsBy :: (a -> a -> Ordering) -> [a] -> [[a]]
+groupsBy f = groupBy (\x y -> f x y == EQ) . sortBy f
