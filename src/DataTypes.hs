@@ -1,25 +1,28 @@
 {-# LANGUAGE NamedFieldPuns, LambdaCase #-}
 module DataTypes where
+
 import SimpleFunctions
 
-data Client = GovOrg     String
-            | Company    String Integer Person String
-            | Individual Person Bool
-            deriving Show
+--data Client = GovOrg     String
+--            | Company    String Integer Person String
+--            | Individual Person Bool
+--            deriving Show
 
-data Person = Person String String Gender
-            deriving Show
+--data Person = Person String String Gender
+--            deriving Show
 
-data ClientR = GovOrgR  { clientRName :: String}
-                 | CompanyR { clientRName :: String
+data Client i = GovOrg  { clientId :: i, clientRName :: String}
+                 | Company {  clientId :: i
+                            , clientRName :: String
                             , companyId :: Integer
-                            , person :: PersonR
+                            , person :: Person
                             , duty :: String }
-                 | IndibidualR { person :: PersonR }
+                 | Individual { clientId :: i, person :: Person }
                  deriving Show
 
-data PersonR = PersonR { firstNameR ::String
-                       , lastNameR :: String
+data Person = Person {   firstName ::String
+                       , lastName :: String
+                       , gender :: Gender
                        } deriving Show
 
 data Gender = Male | Female | Unknown
@@ -35,23 +38,22 @@ data TimeMachine = TimeMachine { manufacturer :: String
 data TravelType = Past | Future | Both
                 deriving Show
 
-clientName :: Client -> String
+clientName :: Client a -> String
 clientName  client = case client of
-            GovOrg name         -> name
-            Company name _ _ _  -> name
-            Individual person _ ->
-                case person of Person fName lName _ -> fName ++ " " ++ lName
+            GovOrg {clientRName}         -> clientRName
+            Company {clientRName}        -> clientRName
+            Individual {person = Person{firstName, lastName}} -> firstName ++ " " ++ lastName
 
-companyName :: Client -> Maybe String
+companyName :: Client a -> Maybe String
 companyName client = case client of
-            Company name _ _ _  -> Just name
+            Company {clientRName}      -> Just clientRName
             _                   -> Nothing
 
-clientStatistics :: [Client] -> (Integer, Integer)
+clientStatistics :: [Client a] -> (Integer, Integer)
 clientStatistics [] = (0, 0)
 clientStatistics (x:xs) = case x of
-                 Individual (Person _ _ Male) _     -> (males + 1, females)
-                 Individual (Person _ _ Female) _   -> (males, females + 1)
+                 Individual {person = (Person {gender = Male})}     -> (males + 1, females)
+                 Individual {person = (Person {gender = Female})}   -> (males, females + 1)
                  _                                  -> (males, females)
                  where tailStatistics = clientStatistics xs
                        males = fst tailStatistics
@@ -62,23 +64,32 @@ makeDiscount [] _ = []
 makeDiscount (t@(TimeMachine { cost }):xs) percent =  let newCost = cost*(1 - percent)
                                                       in t{cost = newCost}:makeDiscount xs percent
 
-isGovOrg :: Client -> Bool
-isGovOrg (GovOrg _) = True
+isGovOrg :: Client a -> Bool
+isGovOrg (GovOrg {}) = True
 isGovOrg _ = False
 
-filterGovOrgs :: [Client] -> [Client]
+filterGovOrgs :: [Client a] -> [Client a]
 filterGovOrgs = filter isGovOrg
 
-filterGovOrgs' :: [Client] -> [Client]
-filterGovOrgs' = filter (\case  GovOrg _ -> True
+filterGovOrgs' :: [Client a] -> [Client a]
+filterGovOrgs' = filter (\case  GovOrg {} -> True
                                 _ -> False
                         )
 
-minimumClientConst :: Client
-minimumClientConst = GovOrg ""
-
-minimumClient :: [Client] -> Client
+minimumClient :: [Client a] -> Client a
 minimumClient = minimumBy $ length . clientName
---minimumClient = foldr1 (\c1 c2 -> if nameLength c1 < nameLength c2 then c1 else c2)
---                    where nameLength = length . clientName
+
+isIndividual :: Client a -> Bool
+isIndividual (Individual {}) = True
+isIndividual _ = False
+
+checkIndividualAnalytics :: [Client a] -> (Bool, Bool)
+checkIndividualAnalytics clients = (any isIndividual clients, not $ all isIndividual clients)
+
+compareClient :: Client a -> Client a -> Ordering
+compareClient (Individual{person = p1}) (Individual{person = p2})
+                                = compare (firstName p1) (firstName p2)
+compareClient (Individual {}) _ = GT
+compareClient _ (Individual {}) = LT
+compareClient c1 c2             = compare (clientName c1) (clientName c2)
 
