@@ -1,4 +1,5 @@
 {-# LANGUAGE NamedFieldPuns, LambdaCase #-}
+
 module DataTypes where
 
 import SimpleFunctions
