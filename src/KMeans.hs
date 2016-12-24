@@ -35,17 +35,17 @@ newCentroidPhase = M.toList . fmap (centroid . map toVector)
 shouldStop :: (Vector v) => [(v, v)] -> Double -> Bool
 shouldStop centroids threshold = foldr (\(x, y) s -> s + distance x y) 0.0 centroids < threshold
 
-kMeans :: (Vector v, Vectorizable e v) => (Int -> [e] -> [v]) -> Int -> [e] -> Double -> [v]
-kMeans initializer k points = kMeans' (initializer k points) points
+kMeans :: (Vector v, Vectorizable e v) => (Int -> [e] -> [v]) -> Int -> [e] -> Double -> ([v], Int)
+kMeans initializer k points = kMeans' (initializer k points) points 1
 
-kMeans' :: (Vector v, Vectorizable e v) => [v] -> [e] -> Double -> [v]
-kMeans' centroids points threshold = 
+kMeans' :: (Vector v, Vectorizable e v) => [v] -> [e] -> Int -> Double -> ([v], Int)
+kMeans' centroids points iteration threshold = 
     let assignments = clusterAssignmentPhase centroids points
         oldNewCentroids = newCentroidPhase assignments
         newCentroids = map snd oldNewCentroids
     in  if shouldStop oldNewCentroids threshold
-        then newCentroids
-        else kMeans' newCentroids points threshold
+        then (newCentroids, iteration)
+        else kMeans' newCentroids points (succ iteration) threshold
 
 initializeSimple :: Int -> [e] -> [(Double, Double)]
 initializeSimple 0 _ = []
