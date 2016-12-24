@@ -13,7 +13,7 @@ instance Vector (Double, Double) where
     distance (a, b) (c, d) = sqrt $ (c - a)**2 + (d - b)**2
     centroid lst =  let (u, v) = foldr (\(a, b) (c, d) -> (a+c, b+d)) (0.0, 0.0) lst
                         n = fromIntegral $ length lst
-                    in (u / n, v / n)
+                    in (u/n, v/n)
 
 class Vector v => Vectorizable e v where
     toVector :: e -> v
@@ -31,3 +31,22 @@ clusterAssignmentPhase centroids points =
 
 newCentroidPhase :: (Vector v, Vectorizable e v) => M.Map v [e] -> [(v, v)]
 newCentroidPhase = M.toList . fmap (centroid . map toVector)
+
+shouldStop :: (Vector v) => [(v, v)] -> Double -> Bool
+shouldStop centroids threshold = foldr (\(x, y) s -> s + distance x y) 0.0 centroids < threshold
+
+kMeans :: (Vector v, Vectorizable e v) => (Int -> [e] -> [v]) -> Int -> [e] -> Double -> [v]
+kMeans initializer k points = kMeans' (initializer k points) points
+
+kMeans' :: (Vector v, Vectorizable e v) => [v] -> [e] -> Double -> [v]
+kMeans' centroids points threshold = 
+    let assignments = clusterAssignmentPhase centroids points
+        oldNewCentroids = newCentroidPhase assignments
+        newCentroids = map snd oldNewCentroids
+    in  if shouldStop oldNewCentroids threshold
+        then newCentroids
+        else kMeans' newCentroids points threshold
+
+initializeSimple :: Int -> [e] -> [(Double, Double)]
+initializeSimple 0 _ = []
+initializeSimple n v = (fromIntegral n, fromIntegral n) : initializeSimple (n-1) v
