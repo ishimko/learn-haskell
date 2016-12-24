@@ -20,7 +20,7 @@ instance Vectorizable (Double, Double) (Double, Double) where
 clusterAssignmentPhase :: (Vector v, Vectorizable e v) => [v] -> [e] -> M.Map v [e]
 clusterAssignmentPhase centroids points =
     let initialMap = M.fromList $ zip centroids (repeat [])
-        in foldr (\p m -> let chosenCentroid = minimumBy (\x y -> compare (distance x $ toVector p) (distance y $ toVector p) ) 
-                                                         centroids
-                          in M.adjust (p:) chosenCentroid m)
-                 initialMap points
+    in foldr    (\p m ->    let chosenCentroid = minimumBy  (\x y -> compare (distance x $ toVector p) (distance y $ toVector p) ) 
+                                                            centroids
+                            in M.adjust (p:) chosenCentroid m)
+                initialMap points
