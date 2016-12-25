@@ -6,14 +6,6 @@ import SimpleFunctions
 import Data.List (groupBy, sortBy)
 import Data.Function (on)
 
---data Client = GovOrg     String
---            | Company    String Integer Person String
---            | Individual Person Bool
---            deriving Show
-
---data Person = Person String String Gender
---            deriving Show
-
 data Client i = GovOrg  { clientId :: i, clientRName :: String}
                  | Company {  clientId :: i
                             , clientRName :: String
